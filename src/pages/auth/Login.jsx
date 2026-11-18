@@ -1,10 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
-import {
-  Mail, Lock, Eye, EyeOff, ShieldCheck, ArrowRight, ArrowLeft,
-  CheckCircle2, KeyRound, Shield, Clock, AlertCircle, Sparkles
-} from 'lucide-react';
-import BrandLogo from '../../components/ui/BrandLogo';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, ArrowLeft, AlertCircle, ShieldCheck } from 'lucide-react';
+import wordmark from '../../assets/logo_archonell.webp';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 
@@ -17,7 +14,6 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberDevice, setRememberDevice] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [lockout, setLockout] = useState(0);
@@ -71,7 +67,7 @@ export default function Login() {
     setError('');
 
     if (!email.trim() || !password) {
-      setError('Please enter both username/email and password.');
+      setError('The provided credentials are incorrect. Please enter your email and password.');
       return;
     }
 
@@ -88,14 +84,14 @@ export default function Login() {
           setLockout(result.retryAfter || 60);
           setError(result.message || 'Too many login attempts. Please try again later.');
         } else {
-          setError(result.message || 'Invalid enterprise credentials. Please check your email and password.');
+          setError(result.message || 'The provided credentials are incorrect. 4 attempts left before sign-in is locked.');
         }
         return;
       }
-      toast.success('Welcome back!', `Signed in as ${result.user.firstName || result.user.name || 'Executive Administrator'}`);
+      toast.success('Welcome back!', `Signed in as ${result.user?.firstName || result.user?.name || 'Administrator'}`);
       navigate(from || '/', { replace: true });
     } catch {
-      setError('Unable to reach Central Gateway. Please check network connectivity.');
+      setError('Unable to reach server. Please check your network connection.');
     } finally {
       setLoading(false);
     }
@@ -146,10 +142,10 @@ export default function Login() {
         }
         return;
       }
-      toast.success('Identity Verified!', `Welcome back to the Executive Console`);
+      toast.success('Identity Verified!', 'Welcome to Archon Nell');
       navigate(from || '/', { replace: true });
     } catch {
-      setError('Unable to connect to authorization enclave. Please try again.');
+      setError('Unable to verify security token. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -169,270 +165,161 @@ export default function Login() {
   };
 
   return (
-    <main className="min-h-screen w-full flex items-center justify-center bg-[#FDF7FF] text-[#1E182C] font-['Inter'] relative overflow-hidden py-10 px-4 sm:px-6">
-      {/* Subtle architectural ambient gradient backdrops */}
-      <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-[#FFDBD0] opacity-40 blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-48 -right-32 w-[30rem] h-[30rem] rounded-full bg-[#F3EAFF] opacity-60 blur-3xl pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-full max-h-[48rem] bg-gradient-to-b from-transparent via-[#F8F1FF]/40 to-transparent pointer-events-none -z-10" />
-
-      {/* Main Container */}
-      <div className="w-full max-w-[540px] flex flex-col items-center z-10">
+    <main className="min-h-screen w-full flex items-center justify-center bg-[#0F172A] font-['Inter',sans-serif] px-4 py-8">
+      {/* Centered White Card */}
+      <div className="w-full max-w-[420px] bg-white rounded-2xl shadow-2xl p-8 sm:p-9">
         
-        {/* Header / Brand Section */}
-        <header className="flex flex-col items-center text-center mb-6">
-          <div className="relative mb-4 group transition-transform duration-300 hover:scale-[1.02]">
-            <BrandLogo variant="wordmark" className="h-12 sm:h-14 w-auto filter drop-shadow-sm" />
-          </div>
-
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EEE4FF] text-[#44474E] text-[11px] font-semibold uppercase tracking-wider mb-2 shadow-xs">
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#8F4C35] animate-pulse" />
-            Zero Trust Perimeter
-          </div>
-
-          <h1 className="text-2xl sm:text-3xl font-bold font-['Plus_Jakarta_Sans'] text-[#000819] tracking-tight mb-1">
-            Archon Nell Portal
-          </h1>
-          <p className="text-sm text-[#44474E] max-w-sm leading-relaxed">
-            Enterprise Workforce Solutions &amp; Partner Management Portal &mdash; Secure Sign In
+        {/* Brandmark */}
+        <div className="flex flex-col items-center mb-6">
+          <img
+            src={wordmark}
+            alt="Archon Nell Incorporated"
+            className="h-16 w-auto object-contain mx-auto"
+          />
+          <p className="text-center text-xs text-slate-500 font-normal mt-3">
+            Support, Finance &amp; Administration
           </p>
-        </header>
+        </div>
 
-        {/* Authentication Card */}
-        <div className="w-full bg-white rounded-2xl shadow-xl shadow-[#07203F]/5 border border-[#E2E8F0] p-6 sm:p-10 relative overflow-hidden transition-all duration-300">
-          {/* Top Subtle Warm Glow Accent Bar */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#07203F] via-[#8F4C35] to-[#07203F]" />
-
-          {notice && !error && (
-            <div className="mb-5 flex items-start gap-2.5 bg-amber-50 border border-amber-200 text-amber-800 text-xs sm:text-sm rounded-xl p-3.5">
-              <AlertCircle className="w-4 h-4 mt-0.5 shrink-0 text-amber-600" />
-              <span>{notice}</span>
+        {/* Error / Alert banner */}
+        {(error || notice) && (
+          <div className="mb-5 flex items-start gap-2.5 bg-[#FEF2F2] border border-red-200/90 text-[#DC2626] rounded-xl px-4 py-3 text-xs leading-relaxed animate-shake">
+            <AlertCircle className="w-4 h-4 shrink-0 text-[#EF4444] mt-0.5" />
+            <div className="flex-1 font-normal">
+              {error || notice}
             </div>
-          )}
+          </div>
+        )}
 
-          {error && (
-            <div className="mb-5 flex items-start gap-2.5 bg-red-50 border border-red-200 text-[#93000A] text-xs sm:text-sm rounded-xl p-3.5 animate-shake">
-              <AlertCircle className="w-4 h-4 mt-0.5 shrink-0 text-[#BA1A1A]" />
-              <span>{error}</span>
+        {pendingTwoFactor ? (
+          /* 2FA Step */
+          <div className="flex flex-col items-center">
+            <div className="w-11 h-11 rounded-xl bg-slate-100 text-[#0F172A] flex items-center justify-center mb-2">
+              <ShieldCheck className="w-5 h-5" />
             </div>
-          )}
+            <h2 className="text-lg font-semibold text-slate-900 tracking-tight text-center">
+              Two-Factor Authentication
+            </h2>
+            <p className="text-xs text-slate-500 text-center mt-1 mb-5">
+              Enter the 6-digit code sent to <strong className="text-slate-800">{pendingTwoFactor.email}</strong>
+            </p>
 
-          {pendingTwoFactor ? (
-            /* 2FA Step */
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 rounded-2xl bg-[#FFDBD0] text-[#8F4C35] flex items-center justify-center mb-3 shadow-xs">
-                <ShieldCheck className="w-6 h-6" />
-              </div>
-              <h2 className="text-xl sm:text-2xl font-bold font-['Plus_Jakarta_Sans'] text-[#000819] tracking-tight text-center">
-                Two-Factor Authentication
-              </h2>
-              <p className="text-xs sm:text-sm text-[#44474E] text-center mt-1.5 mb-6 max-w-sm">
-                Enter the 6-digit security code sent to your authorized enterprise device or authenticator app:
-                <span className="block font-semibold text-[#000819] mt-0.5">{pendingTwoFactor.email}</span>
-              </p>
-
-              <form onSubmit={handleVerify} className="w-full flex flex-col items-center">
-                {/* 6 Digit Inputs Grid */}
-                <div ref={otpRef} className="flex items-center justify-center gap-2 sm:gap-2.5 w-full mb-6">
-                  {otp.map((digit, i) => (
-                    <div key={i} className="flex items-center">
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        autoComplete={i === 0 ? 'one-time-code' : 'off'}
-                        maxLength={6}
-                        autoFocus={i === 0}
-                        value={digit}
-                        onChange={(e) => setOtpDigit(i, e.target.value)}
-                        onKeyDown={(e) => onOtpKeyDown(i, e)}
-                        aria-label={`Digit ${i + 1} of 6`}
-                        className="w-11 h-14 sm:w-13 sm:h-16 text-center text-xl sm:text-2xl font-bold font-['Plus_Jakarta_Sans'] text-[#000819] bg-[#F8F1FF] border border-[#C4C6CF]/50 rounded-xl focus:bg-white focus:border-[#07203F] focus:ring-2 focus:ring-[#07203F]/20 transition-all outline-none shadow-xs"
-                      />
-                      {i === 2 && (
-                        <span className="text-[#74777F] font-bold px-1 select-none opacity-50">&bull;</span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Resend Timer / Action */}
-                <div className="flex items-center justify-center gap-1.5 text-xs text-[#44474E] mb-6">
-                  <Clock className="w-3.5 h-3.5 text-[#74777F]" />
-                  {canResend ? (
-                    <button
-                      type="button"
-                      onClick={handleResendOtp}
-                      className="font-semibold text-[#8F4C35] hover:underline cursor-pointer"
-                    >
-                      Resend Security Code
-                    </button>
-                  ) : (
-                    <span>
-                      Resend security code in <strong className="text-[#000819] font-medium">00:{resendTimer.toString().padStart(2, '0')}</strong>
-                    </span>
-                  )}
-                </div>
-
-                {/* Primary Action Button */}
-                <button
-                  type="submit"
-                  disabled={loading || lockout > 0}
-                  className="w-full h-12 sm:h-14 bg-[#07203F] hover:bg-[#000819] text-white font-semibold text-sm sm:text-base rounded-xl shadow-md hover:shadow-lg active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-                >
-                  <span>{loading ? 'Verifying Credentials...' : 'Verify & Access Console'}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-
-                {/* Divider */}
-                <div className="relative w-full my-6 flex items-center justify-center">
-                  <div className="w-full h-px bg-[#E8DEFA]" />
-                  <span className="absolute bg-white px-3 text-[11px] font-semibold text-[#74777F] uppercase tracking-wider">
-                    or verify hardware
-                  </span>
-                </div>
-
-                {/* Hardware Security Key Alternative */}
-                <button
-                  type="button"
-                  onClick={() => toast.info('FIDO2 Hardware Key', 'Touch your security key or passkey when prompted by your browser.')}
-                  className="w-full py-3 px-4 rounded-xl bg-[#F8F1FF] hover:bg-[#EEE4FF] text-[#000819] font-medium text-xs sm:text-sm transition-all flex items-center justify-center gap-2 cursor-pointer border border-[#E8DEFA]"
-                >
-                  <KeyRound className="w-4 h-4 text-[#8F4C35]" />
-                  <span>Use Security Key (FIDO2 / WebAuthn)</span>
-                </button>
-
-                {/* Return link */}
-                <button
-                  type="button"
-                  onClick={backToPassword}
-                  className="mt-6 inline-flex items-center gap-1.5 text-xs font-medium text-[#44474E] hover:text-[#000819] transition-colors cursor-pointer"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  <span>Return to Sign In</span>
-                </button>
-              </form>
-            </div>
-          ) : (
-            /* Primary Login Form */
-            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
-              <div>
-                <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#44474E] mb-1.5" htmlFor="auth-email">
-                  Username / Enterprise Email
-                </label>
-                <div className="relative">
-                  <Mail className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-[#74777F]" />
+            <form onSubmit={handleVerify} className="w-full flex flex-col items-center">
+              <div ref={otpRef} className="flex items-center justify-center gap-2 w-full mb-5">
+                {otp.map((digit, i) => (
                   <input
-                    id="auth-email"
+                    key={i}
                     type="text"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="alias@archonnell.corp"
-                    autoComplete="username"
-                    className="w-full h-12 sm:h-14 pl-11 pr-4 bg-white text-[#1E182C] text-sm border border-[#C4C6CF] rounded-xl shadow-xs focus:outline-none focus:border-[#07203F] focus:ring-2 focus:ring-[#07203F]/20 focus:bg-[#F8F1FF]/30 transition-all placeholder:text-[#74777F]/60"
+                    inputMode="numeric"
+                    autoComplete={i === 0 ? 'one-time-code' : 'off'}
+                    maxLength={1}
+                    autoFocus={i === 0}
+                    value={digit}
+                    onChange={(e) => setOtpDigit(i, e.target.value)}
+                    onKeyDown={(e) => onOtpKeyDown(i, e)}
+                    aria-label={`Digit ${i + 1} of 6`}
+                    className="w-11 h-12 text-center text-lg font-bold text-slate-900 bg-[#E8F0FE] border border-transparent rounded-xl focus:bg-white focus:border-slate-300 focus:outline-none transition-all"
                   />
-                </div>
+                ))}
               </div>
 
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#44474E]" htmlFor="auth-password">
-                    Password
-                  </label>
-                  <Link
-                    to="/forgot-password"
-                    className="text-[12px] font-medium text-[#8F4C35] hover:underline transition-colors"
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
-                <div className="relative">
-                  <Lock className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-[#74777F]" />
-                  <input
-                    id="auth-password"
-                    type={showPassword ? 'text' : 'password'}
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
-                    autoComplete="current-password"
-                    className="w-full h-12 sm:h-14 pl-11 pr-11 bg-white text-[#1E182C] text-sm border border-[#C4C6CF] rounded-xl shadow-xs focus:outline-none focus:border-[#07203F] focus:ring-2 focus:ring-[#07203F]/20 focus:bg-[#F8F1FF]/30 transition-all placeholder:text-[#74777F]/60"
-                  />
+              <div className="text-xs text-slate-500 mb-5">
+                {canResend ? (
                   <button
                     type="button"
-                    aria-label="Toggle Password Visibility"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-[#74777F] hover:text-[#1E182C] transition-colors cursor-pointer"
+                    onClick={handleResendOtp}
+                    className="text-blue-600 hover:underline font-medium cursor-pointer"
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    Resend Code
                   </button>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2.5 pt-0.5">
-                <input
-                  id="remember-device"
-                  type="checkbox"
-                  checked={rememberDevice}
-                  onChange={(e) => setRememberDevice(e.target.checked)}
-                  className="w-4 h-4 rounded border-[#C4C6CF] text-[#07203F] focus:ring-0 cursor-pointer"
-                />
-                <label htmlFor="remember-device" className="text-xs text-[#44474E] select-none cursor-pointer">
-                  Remember device for 30 days
-                </label>
+                ) : (
+                  <span>Resend code in <strong>00:{resendTimer.toString().padStart(2, '0')}</strong></span>
+                )}
               </div>
 
               <button
                 type="submit"
                 disabled={loading || lockout > 0}
-                className="w-full h-12 sm:h-14 bg-[#07203F] hover:bg-[#000819] text-white font-semibold text-sm sm:text-base rounded-xl shadow-md hover:shadow-lg active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                className="w-full h-11 bg-[#0F172A] hover:bg-[#1E293B] text-white font-medium text-sm rounded-xl transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
-                <span>{loading ? 'Authenticating...' : lockout > 0 ? `Retry in ${lockout}s` : 'Sign In to Enclave'}</span>
+                <span>{loading ? 'Verifying...' : 'Verify & Sign In'}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
-              {/* Hardware Security Tokens Enforced Notice */}
-              <div className="mt-5 p-3.5 bg-[#F8F1FF] border border-[#E8DEFA] rounded-xl flex items-start gap-3">
-                <Shield className="w-4 h-4 text-[#8F4C35] mt-0.5 shrink-0" />
-                <div className="text-xs text-[#44474E] leading-relaxed">
-                  <strong className="text-[#000819] font-semibold block text-[12px] mb-0.5">
-                    Hardware Security Tokens Enforced
-                  </strong>
-                  MFA via FIDO2, WebAuthn, or Enterprise Authenticator is mandatory upon authentication challenge.
-                </div>
-              </div>
+              <button
+                type="button"
+                onClick={backToPassword}
+                className="mt-4 inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Return to Sign In</span>
+              </button>
             </form>
-          )}
-        </div>
+          </div>
+        ) : (
+          /* Primary Login Form */
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-medium text-slate-700 mb-1.5" htmlFor="auth-email">
+                Email
+              </label>
+              <div className="relative rounded-xl bg-[#E8F0FE] transition-all focus-within:ring-2 focus-within:ring-slate-900/10 focus-within:bg-white border border-transparent focus-within:border-slate-300">
+                <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  id="auth-email"
+                  type="text"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="admin@archonnell.com"
+                  autoComplete="username"
+                  className="w-full h-11 pl-10 pr-4 bg-transparent text-slate-900 text-sm focus:outline-none placeholder:text-slate-400 rounded-xl"
+                />
+              </div>
+            </div>
 
-        {/* Security & Compliance Strip */}
-        <div className="w-full mt-6 flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-[#44474E]">
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#EEE4FF]/70 text-[11px] font-semibold tracking-wider uppercase border border-[#E8DEFA]/60">
-            <CheckCircle2 className="w-3.5 h-3.5 text-[#8F4C35]" />
-            <span>SOC 2 Type II</span>
-          </div>
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#EEE4FF]/70 text-[11px] font-semibold tracking-wider uppercase border border-[#E8DEFA]/60">
-            <Shield className="w-3.5 h-3.5 text-[#8F4C35]" />
-            <span>ISO 27001 Certified</span>
-          </div>
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#EEE4FF]/70 text-[11px] font-semibold tracking-wider uppercase border border-[#E8DEFA]/60">
-            <Lock className="w-3.5 h-3.5 text-[#8F4C35]" />
-            <span>256-Bit TLS E2EE</span>
-          </div>
-        </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-700 mb-1.5" htmlFor="auth-password">
+                Password
+              </label>
+              <div className="relative rounded-xl bg-[#E8F0FE] transition-all focus-within:ring-2 focus-within:ring-slate-900/10 focus-within:bg-white border border-transparent focus-within:border-slate-300">
+                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  id="auth-password"
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  autoComplete="current-password"
+                  className="w-full h-11 pl-10 pr-10 bg-transparent text-slate-900 text-sm focus:outline-none placeholder:text-slate-400 rounded-xl"
+                />
+                <button
+                  type="button"
+                  aria-label="Toggle Password Visibility"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
 
-        {/* Executive Footer Meta */}
-        <footer className="mt-6 text-center flex flex-col items-center gap-2">
-          <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-[#74777F]">
-            <a href="#" className="hover:text-[#000819] transition-colors">Information Security Policy</a>
-            <span className="w-1 h-1 rounded-full bg-[#C4C6CF]" />
-            <a href="#" className="hover:text-[#000819] transition-colors">Platform Status (99.99%)</a>
-            <span className="w-1 h-1 rounded-full bg-[#C4C6CF]" />
-            <a href="#" className="hover:text-[#000819] transition-colors">Global Support NOC</a>
-          </nav>
-          <p className="text-[11px] text-[#74777F]/80">
-            &copy; {new Date().getFullYear()} Archon Nell Incorporated. Strictly Authorized Commercial Access Only.
-          </p>
-        </footer>
+            <button
+              type="submit"
+              disabled={loading || lockout > 0}
+              className="w-full h-11 mt-2 bg-[#0F172A] hover:bg-[#1E293B] text-white font-medium text-sm rounded-xl transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            >
+              <span>{loading ? 'Signing In...' : lockout > 0 ? `Retry in ${lockout}s` : 'Sign In'}</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </form>
+        )}
+
+        {/* Card Footer */}
+        <p className="text-center text-xs text-[#6B8BA4] mt-6 select-none">
+          &copy; {new Date().getFullYear()} Archon Nell. All rights reserved.
+        </p>
 
       </div>
     </main>

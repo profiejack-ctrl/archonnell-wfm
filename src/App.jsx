@@ -1,5 +1,9 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import {
+  Layers, BookOpen, Airplay, Target, TrendingUp, GitFork, Award
+} from 'lucide-react';
+import ModulePlaceholder from './pages/common/ModulePlaceholder';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { RoleProvider } from './context/RoleContext';
 import { ToastProvider } from './context/ToastContext';
@@ -82,6 +86,13 @@ function AppRoutes() {
       <Route path="/kiosk-setup" element={<PrivateLayout adminOnly><KioskSetup /></PrivateLayout>} />
 
       <Route path="/" element={<PrivateLayout><HomeRoute /></PrivateLayout>} />
+      <Route path="/competency" element={<PrivateLayout adminOnly><ModulePlaceholder title="Competency Management" icon={Layers} description="Define organizational skills matrices, proficiency tiers, and role competencies." /></PrivateLayout>} />
+      <Route path="/learning" element={<PrivateLayout adminOnly><ModulePlaceholder title="Learning Management" icon={BookOpen} description="Coordinate learning paths, certifications, and compliance courseware across departments." /></PrivateLayout>} />
+      <Route path="/training" element={<PrivateLayout adminOnly><ModulePlaceholder title="Training Management" icon={Airplay} description="Schedule instructor-led training, virtual workshops, and track attendance records." /></PrivateLayout>} />
+      <Route path="/goals" element={<PrivateLayout adminOnly><ModulePlaceholder title="Goals Management" icon={Target} description="Track quarterly OKRs, organizational objectives, and individual employee milestones." /></PrivateLayout>} />
+      <Route path="/performance" element={<PrivateLayout adminOnly><ModulePlaceholder title="Performance Management" icon={TrendingUp} description="Conduct 360 review cycles, calibrated performance scoring, and appraisal feedback." /></PrivateLayout>} />
+      <Route path="/succession" element={<PrivateLayout adminOnly><ModulePlaceholder title="Succession Planning" icon={GitFork} description="Identify talent bench strength, leadership succession pipelines, and flight risks." /></PrivateLayout>} />
+      <Route path="/recognition" element={<PrivateLayout adminOnly><ModulePlaceholder title="Social Recognition" icon={Award} description="Celebrate employee achievements, peer endorsements, and spotlight contributions." /></PrivateLayout>} />
       <Route path="/employees" element={<PrivateLayout adminOnly><Employees /></PrivateLayout>} />
       <Route path="/employee-registration" element={<PrivateLayout adminOnly focused><EmployeeRegistration /></PrivateLayout>} />
       <Route path="/attendance" element={<PrivateLayout adminOnly><Attendance /></PrivateLayout>} />

@@ -48,10 +48,7 @@ export default function MainLayout({ children }) {
       <div className="print:hidden">
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       </div>
-      {/* The sidebar is an overlay, not a permanently-docked column - closed by default (freeing the
-          full width for the content, which is the point of making it closable at all) and only
-          reclaiming the 260px when the drawer is actually open. */}
-      <div className={clsx('flex-1 flex flex-col min-w-0 print:ml-0', sidebarOpen && 'lg:ml-[260px]')}>
+      <div className="flex-1 flex flex-col min-w-0 print:ml-0">
         <div className="print:hidden">
           <Topbar onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
         </div>

@@ -50,6 +50,40 @@
   --color-navy-800: #2B4A87;
   --color-navy-900: #0B1F3A;
   --font-family-poppins: 'Poppins', sans-serif;
+
+  /* Executive Slate & Ochre Design System */
+  --color-primary: #000819;
+  --color-primary-container: #07203f;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #7388ad;
+  --color-secondary: #8f4c35;
+  --color-secondary-container: #fda68a;
+  --color-on-secondary: #ffffff;
+  --color-on-secondary-container: #773924;
+  --color-secondary-fixed: #ffdbd0;
+  --color-secondary-fixed-dim: #ffb59d;
+  --color-on-secondary-fixed: #390b00;
+  --color-on-secondary-fixed-variant: #723520;
+  --color-tertiary: #140400;
+  --color-tertiary-container: #341908;
+  --color-on-tertiary-container: #a97e66;
+  --color-surface: #fdf7ff;
+  --color-surface-dim: #e0d5f1;
+  --color-surface-bright: #fdf7ff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f8f1ff;
+  --color-surface-container: #f3eaff;
+  --color-surface-container-high: #eee4ff;
+  --color-surface-container-highest: #e8defa;
+  --color-surface-variant: #e8defa;
+  --color-on-surface: #1e182c;
+  --color-on-surface-variant: #44474e;
+  --color-outline: #74777f;
+  --color-outline-variant: #c4c6cf;
+  --font-display: 'Plus Jakarta Sans', sans-serif;
+  --font-headline: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-label: 'Inter', sans-serif;
 }
 
 /* Base layer: element styles that must not override Tailwind utilities */

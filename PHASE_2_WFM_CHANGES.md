@@ -124,3 +124,57 @@ npm.cmd run dev --prefix wfm-app
    - **Email**: `admin@archonnell.com`
    - **Password**: `Admin123!`
 4. Explore the **Shifts & Scheduling**, **Attendance**, and **Timesheets** modules populated with live backend data.
+
+
+---
+
+## 6. Executive Slate & Ochre UI Redesign (Google Stitch Prototype Integration)
+
+Based on the Google Stitch prototype (`stitch_modern_admin_dashboard_system`), the **Login**, **Two-Factor Authentication (2FA)**, **Sidebar Navigation**, and **Executive Dashboard** were redesigned to match the official **Executive Slate & Ochre** design tokens and architecture.
+
+### 6.1 Design Tokens & Typography
+- **Primary Color**: `#000819` / Deep Slate Blue container `#07203F`
+- **Secondary Color**: `#8F4C35` (Terracotta Rust) & fixed tint `#FFDBD0`
+- **Surface Canvas**: `#FDF7FF` base, `#FFFFFF` cards with hairline border `#E2E8F0`
+- **Typography**:
+  - `Plus Jakarta Sans` (700 Display, 600 Headline, 500 Subheading)
+  - `Inter` (600 Title, 500/400 Body & Tabular Data)
+- **Google Fonts**: Linked in `index.html` along with `@theme` token definitions in `src/index.css`.
+
+### 6.2 Login & Two-Factor Authentication Redesign (`src/pages/auth/Login.jsx`)
+- **Visuals**:
+  - Top ambient glow with atmospheric radial gradients.
+  - "Zero Trust Perimeter" badge with pulsating status indicator.
+  - Official Archon Nell brandmark (`src/assets/logo_archonell.webp`).
+  - Executive title & subtitle ("Archon Nell Portal &mdash; Secure Sign In").
+  - Form fields with icon adornments, password visibility toggles, and remember device option.
+  - Primary CTA: "Sign In to Enclave" with hover feedback.
+  - "Hardware Security Tokens Enforced" compliance alert box.
+  - Security badges: SOC 2 Type II, ISO 27001 Certified, 256-Bit TLS E2EE.
+  - Footer with Information Security Policy, Status (99.99%), and Support NOC.
+- **Two-Factor Verification Step**:
+  - 6-box segmented OTP code input with centered dot divider.
+  - 45-second countdown timer for resend.
+  - "Verify & Access Console" primary CTA.
+  - "Use Security Key (FIDO2 / WebAuthn)" hardware option.
+  - "Return to Sign In" navigation link.
+
+### 6.3 Executive Dashboard Redesign (`src/pages/HR_Manager/Dashboard.jsx`)
+- **Executive Header**:
+  - Operational enclave status pill, current date, and 99.98% Network SLA.
+  - Large headline: `Welcome back, {user.name || 'Executive Administrator'}`.
+  - Time filter controls: "Last 30 Days", "Quarter to Date", "Fiscal Year".
+  - Quick actions: "Export Report" and "Deploy Shift Node".
+- **4-Column KPI Metric Cards**:
+  1. **Total Platform Revenue**: `$2,845,920` with `+14.8% vs last month` badge & SVG sparkline.
+  2. **Active Enterprise Solutions / Shifts**: Real-time scheduled count with `+8 new deployments` badge and regional avatar tags.
+  3. **Global Client Partners / Headcount**: Active volume with `98.4% CSAT` and `99.1% Retention`.
+  4. **Innovation Velocity**: Real-time SLA % with Sprint target indicator and terracotta progress bar.
+- **Multi-Vector Visualization Grid**:
+  - **Workforce & Revenue Trajectory (Cell 1)**: Interactive multi-series bar chart for Monthly, Quarterly, and Yearly trajectory, coupled with Q4 forecast callout.
+  - **Solutions Health & Infrastructure Telemetry (Cell 2)**: Real-time latency index, cluster saturation, encrypted vault sync, and US-East node telemetry.
+  - **Recent Partner Engagements & Shift Ledger (Cell 3)**: High-density executive table featuring initials avatar chips, department, solution tier, timestamp, commitment hours, and status badges (`Completed`, `In Review`, `Scheduled`).
+  - **Executive Authority & Administrative Directives (Cell 4)**:
+    - Sovereign Enclave Tier 1 protocol banner with multi-signatory quorum and audit ledger trigger.
+    - 3 Administrative Directive quick action tiles (Review Leave Requests, Audit Security Logs, Manage Shift Rosters).
+    - Archon Nell Campus Zurich Hub / Facility Alpha context footer.

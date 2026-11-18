@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Users, Clock, Calendar, FileText,
   CalendarDays, BarChart3, FileBarChart, Settings,
   LogOut, AlertTriangle, Fingerprint, CalendarClock, FileClock,
-  SlidersHorizontal, ScrollText, User
+  SlidersHorizontal, ScrollText, User, Shield, ChevronDown
 } from 'lucide-react';
 import clsx from 'clsx';
 import Avatar from '../ui/Avatar';
@@ -33,8 +33,6 @@ const adminMenuGroups = [
     ],
   },
   {
-    // The leave rules engine moved to Settings > Company Configuration ("Leave Rules"), so this
-    // group is now just the approval console.
     label: 'nav.group.leave',
     items: [
       { path: '/leave', key: 'nav.leave', icon: Calendar },
@@ -43,8 +41,6 @@ const adminMenuGroups = [
   {
     label: 'nav.group.analytics',
     items: [
-      // AI Decision Support lives inside Analytics now (its own tab) rather than a separate
-      // page, so the unresolved-insights badge moves here too.
       { path: '/analytics', key: 'nav.analytics', icon: BarChart3, badgeName: 'ai' },
       { path: '/reports', key: 'nav.reports', icon: FileBarChart },
     ],
@@ -88,19 +84,19 @@ export default function Sidebar({ isOpen, onClose }) {
         to={item.path}
         onClick={onClose}
         className={clsx(
-          'flex items-center gap-3 px-3.5 h-[44px] rounded-xl text-[13.5px] font-medium transition-all duration-200 group',
+          'flex items-center gap-3 px-3.5 h-[42px] rounded-xl text-[13px] font-medium transition-all duration-200 group',
           isActive
-            ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-600/30'
-            : 'text-slate-400 hover:bg-white/[0.06] hover:text-white'
+            ? 'bg-[#07203F] text-white shadow-sm shadow-[#07203F]/20 font-semibold'
+            : 'text-[#44474E] hover:bg-[#F8F1FF] hover:text-[#000819]'
         )}
       >
         <item.icon className={clsx(
           'w-[18px] h-[18px] flex-shrink-0 transition-colors duration-200',
-          isActive ? 'text-white' : 'text-slate-500 group-hover:text-slate-300'
+          isActive ? 'text-white' : 'text-[#74777F] group-hover:text-[#07203F]'
         )} />
         <span className="truncate">{t(item.key)}</span>
         {item.badgeName && unresolvedCount > 0 && (
-          <span className="ml-auto min-w-[20px] h-[20px] px-1.5 inline-flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold">
+          <span className="ml-auto min-w-[20px] h-[20px] px-1.5 inline-flex items-center justify-center rounded-full bg-[#8F4C35] text-white text-[10px] font-bold">
             {unresolvedCount > 99 ? '99+' : unresolvedCount}
           </span>
         )}
@@ -120,71 +116,107 @@ export default function Sidebar({ isOpen, onClose }) {
 
   return (
     <>
-      {/* Overlay, at every width - the drawer is summoned and dismissed the same way on desktop as
-          on a phone, rather than being permanently docked above lg. */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm"
+          className="fixed inset-0 bg-[#000819]/40 z-40 backdrop-blur-xs lg:hidden"
           onClick={onClose}
         />
       )}
 
       <aside
         className={clsx(
-          'fixed left-0 top-0 bottom-0 w-[260px] bg-[#0B1F3A] flex flex-col z-50 transition-transform duration-300 ease-in-out',
-          isOpen ? 'translate-x-0' : '-translate-x-full'
+          'fixed lg:static inset-y-0 left-0 w-72 bg-white border-r border-[#E2E8F0] z-50 flex flex-col justify-between py-5 shadow-xs transition-transform duration-300 ease-in-out',
+          isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         )}
         style={{
-          // The drawer now carries all of the navigation, so it has to clear the phone's own furniture
-          // on both ends: the notch above the wordmark, and the gesture bar below the sign-out row.
-          // Both read 0 in a browser tab and on a desktop, so nothing else moves.
-          paddingTop: 'env(safe-area-inset-top)',
-          paddingBottom: 'env(safe-area-inset-bottom)',
+          paddingTop: 'max(1.25rem, env(safe-area-inset-top))',
+          paddingBottom: 'max(1.25rem, env(safe-area-inset-bottom))',
         }}
       >
-        {/* Logo */}
-        <div className="px-6 h-[72px] flex items-center gap-3 flex-shrink-0">
-          <BrandLogo variant="icon" />
-          <div>
-            <h1 className="font-bold text-lg leading-tight tracking-tight uppercase text-red-500">ARCHON NELL</h1>
-            <p className="text-blue-300 text-[11px] font-medium uppercase tracking-[0.25em]">INCORPORATED</p>
+        <div className="flex flex-col gap-4 overflow-hidden">
+          {/* Logo Header */}
+          <div className="px-5 flex items-center gap-3 flex-shrink-0">
+            <BrandLogo variant="icon" className="w-9 h-9" />
+            <div className="flex flex-col min-w-0">
+              <span className="font-bold text-base text-[#000819] font-['Plus_Jakarta_Sans'] tracking-tight leading-tight truncate">
+                Archon Nell
+              </span>
+              <span className="text-[10px] font-semibold text-[#8F4C35] uppercase tracking-wider leading-tight">
+                Workforce Core
+              </span>
+            </div>
           </div>
+
+          {/* Node Selector Banner */}
+          <div className="px-4">
+            <div className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[#F8F1FF] border border-[#E8DEFA] text-[#000819]">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span className="w-2 h-2 rounded-full bg-[#8F4C35] shrink-0 animate-pulse" />
+                <div className="text-left min-w-0">
+                  <p className="text-[12px] font-semibold text-[#000819] leading-tight truncate">Global Operations</p>
+                  <p className="text-[10px] text-[#44474E] leading-tight truncate">Tier-1 Primary Node</p>
+                </div>
+              </div>
+              <ChevronDown className="w-3.5 h-3.5 text-[#74777F] shrink-0" />
+            </div>
+          </div>
+
+          {/* Navigation Items */}
+          <nav className="flex-1 px-3 overflow-y-auto space-y-1">
+            {currentRole === 'Employee' ? (
+              <div className="space-y-1">
+                {employeeMenuItems.map(renderNavItem)}
+              </div>
+            ) : (
+              <div className="space-y-1">
+                {adminMenuGroups.map((group) => (
+                  <div key={group.label} className="pt-2 first:pt-0">
+                    <div className="px-3.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#74777F]">
+                      {t(group.label)}
+                    </div>
+                    <div className="space-y-0.5">
+                      {group.items.map(renderNavItem)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </nav>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 px-4 py-3 overflow-y-auto">
-          {currentRole === 'Employee' ? (
-            <div className="space-y-1">
-              {employeeMenuItems.map(renderNavItem)}
+        {/* Bottom Section */}
+        <div className="px-4 flex flex-col gap-3 pt-3 border-t border-[#E2E8F0] shrink-0">
+          {/* Security Enclave Pill */}
+          <div className="p-3 rounded-xl bg-[#F8F1FF] border border-[#E8DEFA] flex flex-col gap-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#8F4C35] flex items-center gap-1">
+                <Shield className="w-3 h-3" />
+                Security Enclave
+              </span>
+              <span className="h-1.5 w-1.5 rounded-full bg-[#8F4C35]" />
             </div>
-          ) : (
-            <div className="space-y-1">
-              {adminMenuGroups.map((group) => (
-                <div key={group.label}>
-                  <div className="px-3.5 pt-5 pb-1.5 text-[10.5px] font-semibold uppercase tracking-[0.15em] text-slate-500">
-                    {t(group.label)}
-                  </div>
-                  <div className="space-y-1">
-                    {group.items.map(renderNavItem)}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </nav>
+            <p className="text-[11px] text-[#44474E] leading-snug">
+              Zero Trust active on all cluster connections.
+            </p>
+          </div>
 
-        {/* User Profile - Fixed at bottom */}
-        <div className="px-4 py-4 flex-shrink-0 border-t border-white/[0.06]">
-          <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.06] transition-colors cursor-pointer">
-            <Avatar src={user?.avatar} firstName={user?.firstName} lastName={user?.lastName} size="sm" online />
-            <div className="flex-1 min-w-0">
-              <p className="text-[13px] font-medium text-white truncate">{user?.firstName} {user?.lastName}</p>
-              <p className="text-[11px] text-slate-500 truncate">{user?.roleLabel || currentRole}</p>
+          {/* User Profile */}
+          <div className="flex items-center justify-between gap-2.5 px-2 py-1">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <Avatar src={user?.avatar} firstName={user?.firstName} lastName={user?.lastName} size="sm" online />
+              <div className="flex flex-col min-w-0">
+                <span className="text-[12px] font-semibold text-[#000819] truncate leading-tight">
+                  {user?.firstName ? `${user.firstName} ${user.lastName || ''}` : 'Executive Suite'}
+                </span>
+                <span className="text-[10px] text-[#74777F] truncate leading-tight">
+                  {user?.roleLabel || currentRole || 'ID: AN-98102'}
+                </span>
+              </div>
             </div>
             <button
               onClick={handleSignOut}
               title="Sign out"
-              className="p-1.5 pointer-coarse:p-2.5 rounded-lg text-slate-500 hover:text-white hover:bg-white/[0.06] transition-colors"
+              className="p-1.5 rounded-lg text-[#74777F] hover:text-[#93000A] hover:bg-red-50 transition-colors cursor-pointer"
             >
               <LogOut className="w-4 h-4" />
             </button>
@@ -199,11 +231,11 @@ export default function Sidebar({ isOpen, onClose }) {
           </div>
           <div>
             <p className="text-gray-900 font-semibold text-base">Are you sure you want to logout?</p>
-            <p className="text-gray-500 text-sm mt-1">You will be redirected to the login page.</p>
+            <p className="text-gray-500 text-sm mt-1">You will be redirected to the sign-in enclave.</p>
           </div>
           <div className="flex items-center gap-3 mt-2 w-full">
-            <Button variant="outline" className="flex-1" onClick={() => setShowLogoutModal(false)}>No, Cancel</Button>
-            <Button variant="danger" className="flex-1" onClick={confirmLogout}>Yes, Logout</Button>
+            <Button variant="outline" className="flex-1" onClick={() => setShowLogoutModal(false)}>Cancel</Button>
+            <Button variant="danger" className="flex-1" onClick={confirmLogout}>Sign Out</Button>
           </div>
         </div>
       </Modal>

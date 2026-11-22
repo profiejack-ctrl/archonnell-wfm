@@ -246,12 +246,12 @@ export default function GlobalSearch() {
         onChange={(e) => { setTerm(e.target.value); setOpen(true); }}
         onFocus={() => setOpen(true)}
         onKeyDown={onKeyDown}
-        placeholder="Search employees, documents, etc..."
-        aria-label="Search employees, documents, etc..."
+        placeholder={t('topbar.search')}
+        aria-label={t('topbar.search')}
         role="combobox"
         aria-expanded={showPanel}
         autoComplete="off"
-        className="w-full pl-10 pr-12 py-2 text-xs sm:text-sm rounded-xl bg-[#F1F5F9] border border-slate-200/60 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all duration-200 placeholder:text-slate-400 text-slate-800"
+        className="w-full pl-10 pr-20 py-2.5 text-sm rounded-xl bg-gray-50 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 focus:bg-white transition-all duration-200 placeholder:text-gray-400"
       />
       <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
         {loading && <Loader2 className="w-3.5 h-3.5 text-blue-500 animate-spin" />}

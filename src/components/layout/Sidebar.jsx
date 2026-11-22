@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, Layers, BookOpen, Airplay, Target,
-  TrendingUp, GitFork, Award, FileBarChart, Bot,
-  Users, ScrollText, Settings, LogOut, AlertTriangle,
-  Fingerprint, CalendarClock, Calendar, FileClock, User
+  LayoutDashboard, Users, Clock, Calendar, FileText,
+  CalendarDays, BarChart3, FileBarChart, Settings,
+  LogOut, AlertTriangle, Fingerprint, CalendarClock, FileClock,
+  SlidersHorizontal, ScrollText, User
 } from 'lucide-react';
 import clsx from 'clsx';
 import Avatar from '../ui/Avatar';
@@ -16,30 +16,57 @@ import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useInsights } from '../../context/InsightsContext';
 
-const adminMenuItems = [
-  { path: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { path: '/competency', label: 'Competency Management', icon: Layers },
-  { path: '/learning', label: 'Learning Management', icon: BookOpen },
-  { path: '/training', label: 'Training Management', icon: Airplay },
-  { path: '/goals', label: 'Goals', icon: Target },
-  { path: '/performance', label: 'Performance Management', icon: TrendingUp },
-  { path: '/succession', label: 'Succession Planning', icon: GitFork },
-  { path: '/recognition', label: 'Social Recognition', icon: Award },
-  { path: '/reports', label: 'Reports', icon: FileBarChart },
-  { path: '/analytics', label: 'AI Models', icon: Bot, badgeName: 'ai' },
-  { path: '/employees', label: 'Employees', icon: Users },
-  { path: '/audit-logs', label: 'Audit Logs', icon: ScrollText },
-  { path: '/settings', label: 'Settings', icon: Settings },
+const adminMenuGroups = [
+  {
+    label: 'nav.group.main',
+    items: [
+      { path: '/', key: 'nav.dashboard', icon: LayoutDashboard },
+      { path: '/employees', key: 'nav.employees', icon: Users },
+    ],
+  },
+  {
+    label: 'nav.group.attendance',
+    items: [
+      { path: '/attendance', key: 'nav.attendance', icon: Clock },
+      { path: '/shifts', key: 'nav.shifts', icon: CalendarDays },
+      { path: '/timesheets', key: 'nav.timesheets', icon: FileText },
+    ],
+  },
+  {
+    // The leave rules engine moved to Settings > Company Configuration ("Leave Rules"), so this
+    // group is now just the approval console.
+    label: 'nav.group.leave',
+    items: [
+      { path: '/leave', key: 'nav.leave', icon: Calendar },
+    ],
+  },
+  {
+    label: 'nav.group.analytics',
+    items: [
+      // AI Decision Support lives inside Analytics now (its own tab) rather than a separate
+      // page, so the unresolved-insights badge moves here too.
+      { path: '/analytics', key: 'nav.analytics', icon: BarChart3, badgeName: 'ai' },
+      { path: '/reports', key: 'nav.reports', icon: FileBarChart },
+    ],
+  },
+  {
+    label: 'nav.group.system',
+    items: [
+      { path: '/audit-logs', key: 'nav.auditLogs', icon: ScrollText },
+      { path: '/kiosk-setup', key: 'nav.kioskSetup', icon: SlidersHorizontal },
+      { path: '/settings', key: 'nav.settings', icon: Settings },
+    ],
+  },
 ];
 
 const employeeMenuItems = [
-  { path: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { path: '/my-attendance', label: 'My Attendance', icon: Fingerprint },
-  { path: '/my-schedule', label: 'My Schedule', icon: CalendarClock },
-  { path: '/leave', label: 'Leave Requests', icon: Calendar },
-  { path: '/my-timesheet', label: 'My Timesheet', icon: FileClock },
-  { path: '/my-profile', label: 'My Profile', icon: User },
-  { path: '/settings', label: 'Settings', icon: Settings },
+  { path: '/', key: 'nav.dashboard', icon: LayoutDashboard },
+  { path: '/my-attendance', key: 'nav.myAttendance', icon: Fingerprint },
+  { path: '/my-schedule', key: 'nav.mySchedule', icon: CalendarClock },
+  { path: '/leave', key: 'nav.leaveEmployee', icon: Calendar },
+  { path: '/my-timesheet', key: 'nav.timesheetsEmployee', icon: FileClock },
+  { path: '/my-profile', key: 'nav.myProfile', icon: User },
+  { path: '/settings', key: 'nav.settings', icon: Settings },
 ];
 
 export default function Sidebar({ isOpen, onClose }) {
@@ -47,6 +74,7 @@ export default function Sidebar({ isOpen, onClose }) {
   const navigate = useNavigate();
   const { currentRole } = useRole();
   const { user, logout } = useAuth();
+  const { t } = useLanguage();
   const { unresolvedCount } = useInsights();
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -54,28 +82,25 @@ export default function Sidebar({ isOpen, onClose }) {
   const renderNavItem = (item) => {
     const isActive = location.pathname === item.path ||
       (item.path !== '/' && location.pathname.startsWith(item.path));
-
     return (
       <NavLink
-        key={item.label}
+        key={item.path}
         to={item.path}
         onClick={onClose}
         className={clsx(
-          'flex items-center gap-3 px-3.5 h-[40px] rounded-xl text-xs sm:text-[13px] font-medium transition-all duration-150 group',
+          'flex items-center gap-3 px-3.5 h-[44px] rounded-xl text-[13.5px] font-medium transition-all duration-200 group',
           isActive
-            ? 'bg-[#2563EB] text-white font-semibold shadow-sm shadow-blue-600/30'
-            : 'text-slate-300 hover:text-white hover:bg-white/5'
+            ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-600/30'
+            : 'text-slate-400 hover:bg-white/[0.06] hover:text-white'
         )}
       >
-        <item.icon
-          className={clsx(
-            'w-[18px] h-[18px] flex-shrink-0 transition-colors duration-150',
-            isActive ? 'text-white' : 'text-slate-400 group-hover:text-white'
-          )}
-        />
-        <span className="truncate">{item.label}</span>
+        <item.icon className={clsx(
+          'w-[18px] h-[18px] flex-shrink-0 transition-colors duration-200',
+          isActive ? 'text-white' : 'text-slate-500 group-hover:text-slate-300'
+        )} />
+        <span className="truncate">{t(item.key)}</span>
         {item.badgeName && unresolvedCount > 0 && (
-          <span className="ml-auto min-w-[18px] h-[18px] px-1 inline-flex items-center justify-center rounded-full bg-blue-500 text-white text-[10px] font-bold">
+          <span className="ml-auto min-w-[20px] h-[20px] px-1.5 inline-flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold">
             {unresolvedCount > 99 ? '99+' : unresolvedCount}
           </span>
         )}
@@ -95,61 +120,71 @@ export default function Sidebar({ isOpen, onClose }) {
 
   return (
     <>
+      {/* Overlay, at every width - the drawer is summoned and dismissed the same way on desktop as
+          on a phone, rather than being permanently docked above lg. */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-slate-950/60 z-40 backdrop-blur-xs lg:hidden"
+          className="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm"
           onClick={onClose}
         />
       )}
 
       <aside
         className={clsx(
-          'fixed lg:static inset-y-0 left-0 w-64 bg-[#0B132B] border-r border-slate-800/80 z-50 flex flex-col justify-between py-4 transition-transform duration-300 ease-in-out',
-          isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          'fixed left-0 top-0 bottom-0 w-[260px] bg-[#0B1F3A] flex flex-col z-50 transition-transform duration-300 ease-in-out',
+          isOpen ? 'translate-x-0' : '-translate-x-full'
         )}
         style={{
-          paddingTop: 'max(1rem, env(safe-area-inset-top))',
-          paddingBottom: 'max(1rem, env(safe-area-inset-bottom))',
+          // The drawer now carries all of the navigation, so it has to clear the phone's own furniture
+          // on both ends: the notch above the wordmark, and the gesture bar below the sign-out row.
+          // Both read 0 in a browser tab and on a desktop, so nothing else moves.
+          paddingTop: 'env(safe-area-inset-top)',
+          paddingBottom: 'env(safe-area-inset-bottom)',
         }}
       >
-        <div className="flex flex-col gap-3 overflow-hidden flex-1">
-          {/* Logo Header */}
-          <div className="px-5 py-2 flex items-center gap-2.5 flex-shrink-0">
-            <BrandLogo variant="wordmark" className="h-10 w-auto filter brightness-105" />
+        {/* Logo */}
+        <div className="px-6 h-[72px] flex items-center gap-3 flex-shrink-0">
+          <BrandLogo variant="icon" />
+          <div>
+            <h1 className="font-bold text-lg leading-tight tracking-tight uppercase text-red-500">ARCHON NELL</h1>
+            <p className="text-blue-300 text-[11px] font-medium uppercase tracking-[0.25em]">INCORPORATED</p>
           </div>
-
-          {/* Navigation Items */}
-          <nav className="flex-1 px-3 overflow-y-auto space-y-1 scrollbar-thin scrollbar-thumb-slate-800">
-            {currentRole === 'Employee' ? (
-              <div className="space-y-0.5">
-                {employeeMenuItems.map(renderNavItem)}
-              </div>
-            ) : (
-              <div className="space-y-0.5">
-                {adminMenuItems.map(renderNavItem)}
-              </div>
-            )}
-          </nav>
         </div>
 
-        {/* Bottom Section */}
-        <div className="px-4 pt-3 border-t border-slate-800/80 shrink-0">
-          <div className="flex items-center justify-between gap-2.5 px-2 py-1.5 rounded-xl bg-white/5">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <Avatar src={user?.avatar} firstName={user?.firstName} lastName={user?.lastName} size="sm" />
-              <div className="flex flex-col min-w-0">
-                <span className="text-xs font-semibold text-white truncate leading-tight">
-                  {user?.firstName ? `${user.firstName} ${user.lastName || ''}` : 'System Admin'}
-                </span>
-                <span className="text-[10px] text-slate-400 truncate leading-tight">
-                  {user?.roleLabel || currentRole || 'Admin'}
-                </span>
-              </div>
+        {/* Navigation */}
+        <nav className="flex-1 px-4 py-3 overflow-y-auto">
+          {currentRole === 'Employee' ? (
+            <div className="space-y-1">
+              {employeeMenuItems.map(renderNavItem)}
+            </div>
+          ) : (
+            <div className="space-y-1">
+              {adminMenuGroups.map((group) => (
+                <div key={group.label}>
+                  <div className="px-3.5 pt-5 pb-1.5 text-[10.5px] font-semibold uppercase tracking-[0.15em] text-slate-500">
+                    {t(group.label)}
+                  </div>
+                  <div className="space-y-1">
+                    {group.items.map(renderNavItem)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </nav>
+
+        {/* User Profile - Fixed at bottom */}
+        <div className="px-4 py-4 flex-shrink-0 border-t border-white/[0.06]">
+          <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.06] transition-colors cursor-pointer">
+            <Avatar src={user?.avatar} firstName={user?.firstName} lastName={user?.lastName} size="sm" online />
+            <div className="flex-1 min-w-0">
+              <p className="text-[13px] font-medium text-white truncate">{user?.firstName} {user?.lastName}</p>
+              <p className="text-[11px] text-slate-500 truncate">{user?.roleLabel || currentRole}</p>
             </div>
             <button
               onClick={handleSignOut}
               title="Sign out"
-              className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-white/5 transition-colors cursor-pointer"
+              className="p-1.5 pointer-coarse:p-2.5 rounded-lg text-slate-500 hover:text-white hover:bg-white/[0.06] transition-colors"
             >
               <LogOut className="w-4 h-4" />
             </button>
@@ -164,11 +199,11 @@ export default function Sidebar({ isOpen, onClose }) {
           </div>
           <div>
             <p className="text-gray-900 font-semibold text-base">Are you sure you want to logout?</p>
-            <p className="text-gray-500 text-sm mt-1">You will be redirected to the sign-in enclave.</p>
+            <p className="text-gray-500 text-sm mt-1">You will be redirected to the login page.</p>
           </div>
           <div className="flex items-center gap-3 mt-2 w-full">
-            <Button variant="outline" className="flex-1" onClick={() => setShowLogoutModal(false)}>Cancel</Button>
-            <Button variant="danger" className="flex-1" onClick={confirmLogout}>Sign Out</Button>
+            <Button variant="outline" className="flex-1" onClick={() => setShowLogoutModal(false)}>No, Cancel</Button>
+            <Button variant="danger" className="flex-1" onClick={confirmLogout}>Yes, Logout</Button>
           </div>
         </div>
       </Modal>

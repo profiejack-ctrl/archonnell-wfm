@@ -82,13 +82,15 @@ export default function Topbar({ onMenuToggle }) {
         <div ref={notifRef} className="relative">
           <button
             onClick={() => setShowNotifications((prev) => !prev)}
-            className="relative p-2 rounded-xl hover:bg-slate-100 transition-colors text-slate-500 hover:text-slate-800"
+            className="relative p-2.5 rounded-xl hover:bg-gray-100 transition-colors text-gray-500 hover:text-gray-700"
             title={unreadCount > 0 ? `${unreadCount} unread notification${unreadCount === 1 ? '' : 's'}` : 'Notifications'}
           >
-            <Bell className="w-5 h-5 text-slate-600" />
-            <span className="absolute top-1 right-1 min-w-[16px] h-[16px] px-1 inline-flex items-center justify-center rounded-full bg-red-500 text-white text-[9px] font-bold ring-2 ring-white">
-              {unreadCount > 0 ? (unreadCount > 99 ? '99+' : unreadCount) : '1'}
-            </span>
+            <Bell className="w-5 h-5" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 inline-flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold ring-2 ring-white">
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
+            )}
           </button>
           <NotificationDropdown
             isOpen={showNotifications}
@@ -96,26 +98,45 @@ export default function Topbar({ onMenuToggle }) {
           />
         </div>
 
+        {/* Light / Dark toggle */}
+        <button
+          onClick={toggleTheme}
+          aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          className="relative p-2.5 rounded-xl hover:bg-gray-100 transition-colors text-gray-500 hover:text-gray-700"
+        >
+          <Sun className={`w-5 h-5 transition-all duration-300 ${isDark ? 'scale-0 -rotate-90 absolute' : 'scale-100 rotate-0'}`} />
+          <Moon className={`w-5 h-5 transition-all duration-300 ${isDark ? 'scale-100 rotate-0' : 'scale-0 rotate-90 absolute'}`} />
+        </button>
+
+        {/* Network Status */}
+        <div
+          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition-colors ${
+            isOnline
+              ? 'bg-emerald-50 text-emerald-700'
+              : 'bg-red-50 text-red-600'
+          }`}
+          title={isOnline ? 'Internet connected' : 'No internet connection — AI features require internet'}
+        >
+          {isOnline ? <Wifi className="w-3.5 h-3.5" /> : <WifiOff className="w-3.5 h-3.5" />}
+          <span className="hidden sm:inline">{isOnline ? 'Online' : 'Offline'}</span>
+        </div>
+
+        {/* Divider */}
+        <div className="w-px h-8 bg-gray-200 hidden md:block" />
+
         {/* Profile */}
         <div ref={profileRef} className="relative">
           <button
             onClick={() => setShowProfile(!showProfile)}
-            className="flex items-center gap-2.5 pl-1.5 pr-2.5 py-1 rounded-xl hover:bg-slate-50 transition-colors"
+            className="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors"
           >
-            <div className="w-8 h-8 rounded-full bg-[#1E40AF] text-white font-bold text-xs flex items-center justify-center flex-shrink-0">
-              {user?.firstName && user?.lastName
-                ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase()
-                : 'SA'}
+            <Avatar src={user?.avatar} firstName={user?.firstName} lastName={user?.lastName} size="sm" online={isOnline} />
+            <div className="text-left hidden md:block">
+              <p className="text-[13px] font-semibold text-gray-900 leading-tight">{user?.firstName} {user?.lastName}</p>
+              <p className="text-[11px] text-gray-500">{user?.roleLabel}</p>
             </div>
-            <div className="text-left hidden sm:block">
-              <p className="text-xs font-semibold text-slate-900 leading-tight">
-                {user?.firstName ? `${user.firstName} ${user.lastName || ''}` : 'System Admin'}
-              </p>
-              <p className="text-[10px] text-slate-400 font-normal leading-tight">
-                {user?.roleLabel || 'Admin'}
-              </p>
-            </div>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden sm:block" />
+            <ChevronDown className="w-4 h-4 text-gray-400 hidden md:block" />
           </button>
           {showProfile && (
             <div className="absolute right-0 top-full mt-2 w-60 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 animate-scaleIn z-50">

@@ -1,24 +1,79 @@
 import http from './http';
 
+export const normalizeEmployee = (e) => {
+  if (!e) return e;
+
+  const firstName = e.firstName || e.first_name || '';
+  const lastName = e.lastName || e.last_name || '';
+  const fullName = e.fullName || e.name || [firstName, lastName].filter(Boolean).join(' ') || '';
+
+  const parsedFirst = firstName || fullName.split(' ')[0] || '';
+  const parsedLast = lastName || fullName.split(' ').slice(1).join(' ') || '';
+
+  const employeeNo = e.employee_no || e.employeeNo || e.employeeId || '';
+
+  const rawStatus = String(e.status || e.employment_status || '').trim();
+  let status = 'Active';
+  if (/terminate|inactive|resigned|archived/i.test(rawStatus)) {
+    status = 'Terminated';
+  } else if (/leave/i.test(rawStatus)) {
+    status = 'On Leave';
+  } else {
+    status = 'Active';
+  }
+
+  const employmentType = e.employmentType || e.employment_type || e.contract_type || 'Regular';
+  const hireDate = e.hireDate || e.hire_date || e.dateHired || e.created_at || '';
+  const birthDate = e.birthDate || e.birth_date || e.dateOfBirth || '';
+
+  const faceRegistered = Boolean(
+    e.faceRegistered ??
+    e.face_registered ??
+    (e.faceDescriptor && e.faceDescriptor.length > 0) ??
+    (e.face_descriptor && (Array.isArray(e.face_descriptor) ? e.face_descriptor.length > 0 : Boolean(e.face_descriptor)))
+  );
+
+  return {
+    ...e,
+    id: e.id,
+    employeeId: employeeNo || e.id,
+    employeeNo: employeeNo || e.id,
+    firstName: parsedFirst,
+    lastName: parsedLast,
+    name: fullName || [parsedFirst, parsedLast].filter(Boolean).join(' '),
+    fullName: fullName || [parsedFirst, parsedLast].filter(Boolean).join(' '),
+    department: e.department || e.department_name || '',
+    departmentId: e.departmentId || e.department_id || '',
+    position: e.position || e.position_title || '',
+    positionId: e.positionId || e.position_id || '',
+    role: e.role || e.position_title || e.position || '',
+    phone: e.phone || e.mobile_number || '',
+    mobileNumber: e.mobile_number || e.phone || '',
+    email: e.email || '',
+    status,
+    employmentStatus: e.employment_status || e.employmentStatus || rawStatus || 'Regular',
+    employmentType,
+    probationary: Boolean(e.probationary ?? /probation/i.test(employmentType)),
+    hireDate,
+    birthDate,
+    dateOfBirth: birthDate,
+    avatar: e.avatar || e.avatar_url || '',
+    faceRegistered,
+    faceImage: e.faceImage || e.face_image || null,
+    faceDescriptor: e.faceDescriptor || e.face_descriptor || null,
+  };
+};
+
 export const employeeService = {
   getAll: async () => {
     const { data } = await http.get('/employees');
     const list = Array.isArray(data) ? data : (data?.data || []);
-    return list.map(e => ({
-      ...e,
-      name: e.name || [e.first_name, e.last_name].filter(Boolean).join(' '),
-      fullName: e.fullName || [e.first_name, e.last_name].filter(Boolean).join(' '),
-      department: e.department || e.department_name || '',
-      position: e.position || e.position_title || '',
-      role: e.role || e.position_title || e.position || '',
-      status: e.status || e.employment_status || 'Active',
-      employeeId: e.employee_no || e.employeeId || e.id,
-      phone: e.phone || e.mobile_number || '',
-    }));
+    return list.map(normalizeEmployee);
   },
   getById: async (id) => {
     const { data } = await http.get(`/employees/${id}`);
-    return data;
+    const emp = data?.data || data;
+    return normalizeEmployee(emp);
   },
   create: async (payload) => {
     const { data } = await http.post('/employees', payload);
@@ -68,8 +123,10 @@ export const attendanceService = {
       employeeId: a.employee_no || a.employeeId || a.employee_id,
       department: a.department || a.department_name,
       position: a.position || a.position_title,
-      timeIn: a.timeIn || a.time_in || '',
-      timeOut: a.timeOut || a.time_out || '',
+      timeIn: a.timeIn || a.time_in || a.clock_in || '',
+      timeOut: a.timeOut || a.time_out || a.clock_out || '',
+      clockIn: a.clockIn || a.clock_in || a.time_in || a.timeIn || '',
+      clockOut: a.clockOut || a.clock_out || a.time_out || a.timeOut || '',
       workedHours: Number(a.worked_hours ?? a.workedHours ?? 0),
       lateMinutes: Number(a.late_minutes ?? a.lateMinutes ?? 0),
       undertimeMinutes: Number(a.undertime_minutes ?? a.undertimeMinutes ?? 0),

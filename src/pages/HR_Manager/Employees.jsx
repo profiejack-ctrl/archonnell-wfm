@@ -33,7 +33,13 @@ import { useToast } from '../../context/ToastContext';
 // A person who is no longer with the company is not on this list, and there is no control anywhere
 // that brings them back. Their record is still in the database - reports and offboarding need it -
 // but day to day this screen is the people who work here.
-const statusVariant = { Active: 'success', 'On Leave': 'warning', Terminated: 'danger' };
+const statusVariant = {
+  Active: 'success',
+  Regular: 'success',
+  Probationary: 'warning',
+  'On Leave': 'warning',
+  Terminated: 'danger'
+};
 
 const genders = ['Male', 'Female'];
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -187,7 +193,7 @@ export default function Employees() {
 
   const stats = useMemo(() => ({
     total: roster.length,
-    active: roster.filter(e => e.status === 'Active').length,
+    active: roster.filter(e => e.status === 'Active' || e.employmentStatus === 'Regular' || e.employmentStatus === 'Probationary').length,
     faceRegistered: roster.filter(e => e.faceRegistered).length,
   }), [roster]);
 
@@ -419,10 +425,12 @@ export default function Employees() {
                 <Card key={emp.id} hover className="group">
                   <div className="flex items-start justify-between mb-3">
                     <Avatar firstName={emp.firstName} lastName={emp.lastName} size="lg" src={emp.avatar} />
-                    <Badge variant={statusVariant[emp.status]} dot size="xs">{emp.status}</Badge>
+                    <Badge variant={statusVariant[emp.status] || 'default'} dot size="xs">{emp.status}</Badge>
                   </div>
                   <h3 className="font-semibold text-gray-900">{emp.firstName} {emp.lastName}</h3>
-                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 font-mono">{emp.id}</span>
+                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 font-mono">
+                    {emp.employeeNo || emp.employeeId || emp.id}
+                  </span>
                   <p className="text-sm text-gray-500 mt-0.5 mb-2">{emp.position}</p>
                   <div className="flex items-center gap-1.5 flex-wrap">
                     <Badge variant="primary" size="xs">{emp.department}</Badge>
@@ -441,7 +449,7 @@ export default function Employees() {
                       <Clock className="w-3.5 h-3.5" /> {shiftLabel(emp.id)}
                     </div>
                     <div className="flex items-center gap-2 text-xs text-gray-500">
-                      <Calendar className="w-3.5 h-3.5" /> {formatDate(emp.hireDate)}
+                      <Calendar className="w-3.5 h-3.5" /> {emp.hireDate ? formatDate(emp.hireDate) : 'Not specified'}
                     </div>
                   </div>
                   <div className="flex items-center gap-2 mt-4 pt-3 border-t border-gray-100">
@@ -466,7 +474,7 @@ export default function Employees() {
               <tbody className="divide-y divide-gray-50">
                 {paginated.map(emp => (
                   <tr key={emp.id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-4 py-3.5 text-sm font-medium text-gray-500">{emp.id}</td>
+                    <td className="px-4 py-3.5 text-sm font-medium text-gray-500">{emp.employeeNo || emp.employeeId || emp.id}</td>
                     <td className="px-4 py-3.5">
                       <div className="flex items-center gap-3">
                         <Avatar firstName={emp.firstName} lastName={emp.lastName} size="sm" src={emp.avatar} />

@@ -336,16 +336,17 @@ export default function AttendanceTerminal() {
     let minDigitLength = 0;
 
     for (const employee of directory) {
-      const forms = idForms(employee.id);
+      const code = employee.employeeNo || employee.employeeId || employee.id;
+      const forms = [...new Set([...idForms(code), ...idForms(employee.id)])];
       for (const form of forms) {
         if (!byForm.has(form)) byForm.set(form, employee);
         allForms.push(form);
       }
-      const digits = normalizeId(employee.id).replace(/\D/g, '').length;
+      const digits = normalizeId(code).replace(/\D/g, '').length;
       if (digits > 0 && (minDigitLength === 0 || digits < minDigitLength)) minDigitLength = digits;
     }
 
-    return { byForm, allForms, minDigitLength: minDigitLength || 8 };
+    return { byForm, allForms, minDigitLength: minDigitLength || 4 };
   }, [directory]);
 
   const minIdLength = directoryIndex.minDigitLength;
@@ -402,7 +403,7 @@ export default function AttendanceTerminal() {
     const timer = setTimeout(async () => {
       setServerCheckPending(true);
       try {
-        const found = await kioskService.getEmployee(typed);
+        const found = await kioskService.getEmployee(query.trim());
         if (!cancelled && found) {
           setCandidate(found);
           setPhase('confirm');
